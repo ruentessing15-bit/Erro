@@ -1,0 +1,148 @@
+local __v1 = game:GetService("Players")
+local __v2 = __v1.LocalPlayer
+
+local __v3 = Instance.new("ScreenGui")
+__v3.Name = "DeltaUI"
+__v3.ResetOnSpawn = false
+__v3.Parent = __v2:WaitForChild("PlayerGui")
+
+local __v4 = Instance.new("Frame")
+__v4.Size = UDim2.new(0, 430, 0, 280)
+__v4.Position = UDim2.new(0.5, -215, 0.5, -140)
+__v4.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+__v4.BorderSizePixel = 0
+__v4.Parent = __v3
+
+local __v5 = Instance.new("UICorner")
+__v5.CornerRadius = UDim.new(0, 12)
+__v5.Parent = __v4
+
+local __v6 = Instance.new("TextLabel")
+__v6.Size = UDim2.new(1, -20, 0, 45)
+__v6.Position = UDim2.new(0, 15, 0, 0)
+__v6.BackgroundTransparency = 1
+__v6.Text = "Delta UI"
+__v6.TextColor3 = Color3.fromRGB(255, 255, 255)
+__v6.TextSize = 22
+__v6.Font = Enum.Font.GothamBold
+__v6.TextXAlignment = Enum.TextXAlignment.Left
+__v6.Parent = __v4
+
+local __v7 = Instance.new("Frame")
+__v7.Size = UDim2.new(1, -20, 0, 40)
+__v7.Position = UDim2.new(0, 10, 0, 50)
+__v7.BackgroundTransparency = 1
+__v7.Parent = __v4
+
+local __v8 = Instance.new("Frame")
+__v8.Size = UDim2.new(1, -20, 1, -105)
+__v8.Position = UDim2.new(0, 10, 0, 95)
+__v8.BackgroundTransparency = 1
+__v8.Parent = __v4
+
+local __v9 = Instance.new("UIListLayout")
+__v9.Padding = UDim.new(0, 8)
+__v9.Parent = __v8
+
+local function __v10(text, callback)
+    local __v11 = Instance.new("TextButton")
+    __v11.Size = UDim2.new(1, 0, 0, 42)
+    __v11.BackgroundColor3 = Color3.fromRGB(30, 30, 36)
+    __v11.Text = text
+    __v11.TextColor3 = Color3.fromRGB(235, 235, 235)
+    __v11.TextSize = 15
+    __v11.Font = Enum.Font.GothamMedium
+    __v11.AutoButtonColor = false
+    __v11.Parent = __v8
+
+    local __v5 = Instance.new("UICorner")
+    __v5.CornerRadius = UDim.new(0, 8)
+    __v5.Parent = __v11
+
+    local __v12 = false
+
+    __v11.MouseButton1Click:Connect(function()
+        __v12 = not __v12
+
+        if __v12 then
+            __v11.BackgroundColor3 = Color3.fromRGB(45, 150, 90)
+        else
+            __v11.BackgroundColor3 = Color3.fromRGB(30, 30, 36)
+        end
+
+        callback(__v12)
+    end)
+
+    return __v11
+end
+
+__v10("Speed", function(__v12)
+    local __v13 = __v2.Character
+    local __v14 = __v13 and __v13:FindFirstChildOfClass("Humanoid")
+
+    if __v14 then
+        __v14.WalkSpeed = __v12 and 50 or 16
+    end
+end)
+
+__v10("Jump Power", function(__v12)
+    local __v13 = __v2.Character
+    local __v14 = __v13 and __v13:FindFirstChildOfClass("Humanoid")
+
+    if __v14 then
+        __v14.UseJumpPower = true
+        __v14.JumpPower = __v12 and 100 or 50
+    end
+end)
+
+__v10("Infinite Jump", function(__v12)
+    getgenv().InfiniteJump = __v12
+end)
+
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if getgenv().InfiniteJump then
+        local __v13 = __v2.Character
+        local __v14 = __v13 and __v13:FindFirstChildOfClass("Humanoid")
+
+        if __v14 then
+            __v14:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end
+end)
+
+local __v15 = false
+local __v16
+local __v17
+
+__v6.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        __v15 = true
+        __v16 = input.Position
+        __v17 = __v4.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                __v15 = false
+            end
+        end)
+    end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if __v15 and (
+        input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch
+    ) then
+
+        local __v18 = input.Position - __v16
+
+        __v4.Position = UDim2.new(
+            __v17.X.Scale,
+            __v17.X.Offset + __v18.X,
+            __v17.Y.Scale,
+            __v17.Y.Offset + __v18.Y
+        )
+    end
+end)
